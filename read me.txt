@@ -1,0 +1,234 @@
+Brendan Beerman, B00592578, br794640@dal.ca
+Peter Conway, B00549536, pconway@dal.ca
+Thomas Crowell, B00550741, thomas.crowell@dal.ca
+
+----------------------------------------------------
+What is k-nearest neighbour classification algorithm
+----------------------------------------------------
+
+	The k-nearest neighbour classification algorithm is a form of lazy learning, 
+	that aims to classify cases in a test set by comparing that case to all already correctly 
+	classified training cases. For every row in the test cases, and based on a user defined integer 
+	value for k, the algorithm looks for the k-closest points in the training cases as defined 
+	by their euclidean distance. It then uses majority voting of those k-closest points to 
+	determine what to classify that case in the test set. 
+
+-----------------------------
+Running and using the program
+-----------------------------
+	
+	Run the Java .jar file in your terminal ('java -jar kNN.jar').
+	Alternatively, Or the Java source files themselves can be compiled and ran, with the 
+	driver.java being the Java class that has the main function.
+	The program assumes that you have the latest version of Java installed.
+	During execution of the program, it will prompt the user for a k-value (positive integer),
+	and the full path name to the training and test files. The output will be located
+	in output.txt, and is in the same form as the test file, except with filled in classifiers.
+	
+	*Disclaimer: The program for usage with the particle physics database it was built for may
+				 have a very large runtime because of the size of the test and training 
+				 files (100000 rows * 79 columns, 50000 rows * 79 columns respectively). 
+				 It is advised to kill the program after minutes/hours of the program writing to output, 
+				 and view the subset of what was written during that time if time is an issue.
+
+-----------	
+The program	
+-----------
+	
+	The program consists of four java files
+		driver
+		read_data_plus
+		node
+		cleaning_part
+		cleanin
+		
+	The driver class:
+		Contains one function, main.
+			
+			the main function
+				First deletes any possible leftover files from previous runs of the program.
+				It then goes to the utility classes cleaning_part, cleanin, read_data_plus to perform the cleaning of the data source files,
+				scan the cleaned test file into memory and main columns of training file in, and find out the k value from the user. 
+				Then program then loops for each test row and calls several functions from read_data_plus. First, "readAndGetDist" will read in 
+				and return distances for each row of the test set. Using those distances, "findKIndices" is called to retrieve the k-indices
+				where the smallest distances are found. Finally, the "majorityVote" function is called to find the majority class
+				of the k-smallest indices, and the result is written back to output.txt using "writeToFile".
+	
+	The read_data_plus class:
+		Contains eight functions, getWidth, readAndGetDist, readMainColumn, readTestColumns, findDistance,
+		findKIndices, majorityVotes, and writeToFile. The functions in this class are used mainly for reading
+		in data, and other utility functions used for in the k-nearest neighbor algorithm.
+		
+			the getWidth function
+				It takes in a string, which is the file name with the extension. 
+				Then opens the file, and makes a scanner for that file. 
+				The first line of the file is saved to a string.
+				That string is split into an array by any white space between strings.
+				Finally the length of that array is returned
+			
+			the readAndGetDist
+				Takes in a string, the training file name
+				Takes in an integer, the column where the classifier is located
+				Takes in a second integer, the number of attributes in the file
+				Takes in an arrayList of type node, a new test file row to classify
+				Opens the file and a scanner for it
+				Goes through line by line
+				Getting all values except from the column of the integer that was passed in
+				And setting the X and Y coordinates of that value
+				Adding all of these nodes to an array list
+				Creates a distances array list of type Double to store distances
+				Finds distances between new test file row, and all training file rows by calling findDistance()
+				Saves distances in distances array list
+				Return distances array list
+				
+			the readMainColumn function
+				Takes in a string, the file name 
+				Takes in an integer, the column to classify
+				Opens the file and a scanner for it
+				Goes through line by line
+				Getting only the values from the integer that was passed in
+				And setting the X and Y coordinates of that value
+				Adding all of these nodes to an array list
+				Returns the array list
+
+			the readTestColumns function
+				Similar in vein to the readMainColumn function
+				Takes in a string, the test file name 
+				Makes one array list for every element, read in by row
+				Returns the entire array list
+				
+			the findDistance function
+				Takes in an array list of type node, a row of training data
+				Takes in an array list of type node, a row of test data
+				Takes in an integer, the number of attributes in the each row
+				For each attribute of the two rows
+				Take the value of each attribute 
+				Subtract the test row value from the trained row value
+				Square it, and then sum up all the squared subtracted attributes
+				Square root that summed number
+				Return that as the euclidean distance between the two rows
+				
+			the findKIndices function
+				Takes in an integer k, the number of values to retrieve
+				Takes in an array list of type Double, a list of euclidean distances
+				Searches through the array list
+				Find the smallest distance and saves the index of that value
+				Sets that index value to the maximum double value, so it will not be picked again
+				Repeat search k times, saving k indices into an array list
+				Return the array list
+			
+			the majorityVotes function
+				Takes in an array list of type node, the classification column of the training file
+				Takes in an array list of type Integer, the indices where the k smallest neighbors were found
+				Creates a hashmap of type <String, Integer>
+				For each index in the Integer array list, we find the classified value of that index in the node array list
+				We then keep a running count in the hashmap of how many times each classified value appears
+				Iterate through the hashmap to find which classified value appears most
+				Return that classified value
+			
+			the writeToFile function
+				Takes in a String, the classifier for the row to write
+				Takes in an array list of type node, the rest of the row of data
+				Makes a new FileWriter for output.txt
+				Appends the String classifier and a space to the file
+				For each node in the array list, appends its value and a space to the file
+				Appends a new line character to the file
+				Closes the writer and returns
+		
+	The node class:	
+		The class has three private global values, one string, and two integers
+			
+			Value
+				A string
+				Is a given value from the data source file
+			
+			X and Y
+				They are two integers
+				Which are the X and Y coordinates of a given value 
+		
+		Contains seven functions, setValue, setCoordinates, getValue, getX, getY, and toString
+			
+			the setValue function
+				Takes in a string and makes value become that string
+			
+			the setCoordinates function
+				Takes in two integers, the firs being the X coordinate, the second is the Y
+				Sets X to be the first and Y to be the second
+			
+			the getValue function
+				Returns the value string
+			
+			the getX function 
+				Returns the X coordinate
+			
+			the getY function 
+				Returns the Y coordinate
+			
+			the node function
+				Is the constructor for the node object
+				It is empty, and does not take in any values
+			
+			the toString function
+				Returns a string
+				In the form of "Value: value (X, Y)"
+	
+	The cleaning part class: 
+		The class contains five functions, as described below
+		two getters
+			
+			getTrainFileName
+				returns a string
+				which is the path to the training data set
+			
+			getTestFileName
+				returns a string
+				which is the path to the testing data set
+			
+		one constructor
+			cleaning_part
+				an empty constructor
+				does not take in any parameters
+				does not set any values
+		
+		two utility function
+			
+			pickFile
+				takes in two variables, an integer and a scanner
+				the integer keeps track of whether it is being used for the training or testing set
+				the scanner is used to the user input
+				the function prompts a user to enter a file path
+				if the file does not exist the program asks to enter again
+				when a file is found the function saves the path and returns
+			
+			cleanUp
+				takes in one variable, an integer
+				the integer keeps track of whether it is being used for the training or testing set
+				the file is opened
+				a new file is created to write the cleaned rows to
+				the data is cleaned by
+				deleting the column that has the row number
+				removing the rows past an arbitrary distance because their values would be too great to affect the classifier
+				when a file is found the function saves the path and returns
+	
+	The cleanin class:
+		The class contains one utility function:
+			
+			pickKValue
+				takes in one parameter a scanner
+				prompts the user for an integer
+				if the integer is negative it will ask the user to resubmit and answer
+				then the k value is returned
+	
+	The flow of the program
+		driver --> main() --> cleaning_part  --> pickFile() --> cleanUp()
+			              --> read_data_plus --> getWidth()
+						  --> cleanin		 --> pickKValue()
+						  --> read_data_plus --> readMainColumn()
+											 --> readTestColumns() 
+											 --> for(each row in test columns) --> readAndGetDist()
+																			   --> findKIndices()
+																			   --> majorityVote()
+																			   --> writeToFile()
+	
+	Look to the comments in the source of the code for any additional information
+	
