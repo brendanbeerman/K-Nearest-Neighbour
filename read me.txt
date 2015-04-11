@@ -1,6 +1,4 @@
-Brendan Beerman, B00592578, br794640@dal.ca
-Peter Conway, B00549536, pconway@dal.ca
-Thomas Crowell, B00550741, thomas.crowell@dal.ca
+Brendan Beerman, Peter Conway, and Thomas Crowell
 
 ----------------------------------------------------
 What is k-nearest neighbour classification algorithm
